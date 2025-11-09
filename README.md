@@ -182,8 +182,6 @@ Under work!
 * Ákos Ilia
 * Péter Török
 
-Project Link: [https://github.com/CodecoolGlobal/el-proyecte-grande-production-general-peti9406](https://github.com/CodecoolGlobal/el-proyecte-grande-production-general-peti9406)
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
