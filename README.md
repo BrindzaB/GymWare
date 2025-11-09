@@ -177,10 +177,10 @@ Under work!
 <!-- CONTACT -->
 ## Contact
 
-* Bernadett Kiss - email@email_client.com
-* Botond Brindza - email@email_client.com
-* Ákos Ilia - email@email_client.com
-* Péter Török - p.torok0694@gmail.com
+* Bernadett Kiss
+* Botond Brindza - botibrindza@gmail.com
+* Ákos Ilia
+* Péter Török
 
 Project Link: [https://github.com/CodecoolGlobal/el-proyecte-grande-production-general-peti9406](https://github.com/CodecoolGlobal/el-proyecte-grande-production-general-peti9406)
 
