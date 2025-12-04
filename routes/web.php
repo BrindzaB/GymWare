@@ -18,26 +18,16 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('/profile/bio', [ProfileController::class, 'updateBio'])->name('profile.updateBio');
-    Route::patch('/profile/subscription', [ProfileController::class, 'updateSubscription'])->name('profile.subscription.update');
-    Route::delete('/profile/subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.subscription.cancel');
-    Route::patch('/profile/subscribe',[ProfileController::class, 'subscribe'])->name('profile.subscribe');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
 require __DIR__.'/auth.php';
 
-Route::get("/exercises", [ExerciseDBController::class, 'index']);
-Route::get("/exercises/{id}", [ExerciseDBController::class, 'show'])->name('exercises.show');
-
 Route::middleware('auth')->group(function () {
+    //Exercise catalog
+    Route::get("/exercises", [ExerciseDBController::class, 'index']);
+    Route::get("/exercises/{id}", [ExerciseDBController::class, 'show'])->name('exercises.show');
+
     //Workout Planner
     Route::get('/workout-planner', [WorkoutPlanController::class, 'index']);
     Route::post('/workout-planner', [WorkoutPlanController::class, 'store']);
-
     Route::get('/workout-planner/edit/{id}', [WorkoutPlanController::class, 'edit']);
     Route::patch('/workout-planner/{id}', [WorkoutPlanController::class, 'update']);
     Route::delete('/workout-planner/{plan}', [WorkoutPlanController::class, 'destroy']);
@@ -50,29 +40,33 @@ Route::middleware('auth')->group(function () {
     //Workout
     Route::get('/workout/create/{id}', [WorkoutController::class, 'create'] );
     Route::post('/workout/create', [WorkoutController::class, 'store'] );
-
     Route::post('/workout/download/{id}', [WorkoutController::class, 'download']);
-
     Route::get('/workout/history', [WorkoutController::class, 'index']);
     Route::get('/workout/history/{id}', [WorkoutController::class, 'show'] );
-
     Route::get('/workout/progression/{id}', [WorkoutController::class, 'progression'] );
     Route::post('/workout/progression/download', [WorkoutController::class, 'downloadChart'] );
-});
 
-Route::middleware('auth')->group(function (){
+    //Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/bio', [ProfileController::class, 'updateBio'])->name('profile.updateBio');
+    Route::patch('/profile/subscription', [ProfileController::class, 'updateSubscription'])->name('profile.subscription.update');
+    Route::delete('/profile/subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.subscription.cancel');
+    Route::patch('/profile/subscribe',[ProfileController::class, 'subscribe'])->name('profile.subscribe');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Appointment scheduling
     Route::get('/coaches', [AppointmentController::class, 'index'])->name('coaches.index');
     Route::get('/coaches/{coach}', [AppointmentController::class, 'show'])->name('coaches.show');
     Route::get('/appointments/create/{coach}', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::get('/my-appointments', [AppointmentController::class, 'myAppointments'])->name('appointments.myAppointments');
     Route::patch('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
-});
 
-//Gym Locator
-Route::middleware('auth')->group(function (){
+    //Gym locator
     Route::get('/gymmap', function () {return view('gymmap');});
     Route::get('/gymsdata', [GymController::class, 'preload']);
 });
+
 
 
