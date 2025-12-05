@@ -1,49 +1,39 @@
-# ---- 1️⃣ PHP + Apache alap ----
-FROM php:8.2-apache AS app
+FROM php:8.2-fpm
 
-# Rendszerfüggőségek + PHP kiterjesztések
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git unzip libpng-dev libonig-dev libxml2-dev curl \
-    && docker-php-ext-install pdo_mysql
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    mariadb-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Apache rewrite engedélyezése
-RUN a2enmod rewrite
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install -j$(nproc) gd pdo_mysql mbstring exif pcntl bcmath
 
-# Composer bemásolása
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Munkakönyvtár
-WORKDIR /var/www/html
+# Set working directory
+WORKDIR /var/www
 
-# Laravel fájlok másolása
+# Copy entire project first
 COPY . .
 
-# Függőségek telepítése
-RUN composer install --no-dev --optimize-autoloader
+# Install dependencies
+RUN composer install --no-interaction --optimize-autoloader
 
-# Storage és cache mappák jogosultsága
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Set permissions
+RUN chown -R www-data:www-data /var/www
 
-# Public mappára mutasson az Apache
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Expose port for artisan serve
+EXPOSE 8000
 
-# Port megnyitása
-EXPOSE 80
-
-# ---- 2️⃣ Node / Vite build ----
-FROM node:20 AS frontend
-
-WORKDIR /app
-COPY package*.json vite.config.js ./
-RUN npm install
-COPY resources ./resources
-RUN npm run build
-
-# ---- 3️⃣ Production image ----
-FROM app AS final
-
-# Buildelt frontend másolása
-COPY --from=frontend /app/public/build ./public/build
-
-# Default indítás
-CMD ["apache2-foreground"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
